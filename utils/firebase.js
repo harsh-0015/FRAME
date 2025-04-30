@@ -1,33 +1,32 @@
-import { initializeApp } from "firebase/app";
+// lib/firebase.js
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
-// Firebase config
+// Firebase config from environment variables
 const firebaseConfig = {
-  apiKey: "AIzaSyCPY5Tm9L_TAnl4sXlJOBcOcBTjjbhaU18",
-  authDomain: "frame-17b3a.firebaseapp.com",
-  projectId: "frame-17b3a",
-  storageBucket: "frame-17b3a.appspot.com", // ✅ fixed typo here
-  messagingSenderId: "140727981599",
-  appId: "1:140727981599:web:bb20cb0199df8979d3672a",
-  measurementId: "G-F03KEQRBR9",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-// Initialize Firebase app once
-const app = initializeApp(firebaseConfig);
+// Ensure Firebase is only initialized once
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
 // Core services
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Do not export analytics directly — it's optional in SSR
-let analytics = null;
-
+// Optional: Initialize Analytics only on client
 if (typeof window !== "undefined") {
   import("firebase/analytics").then(({ getAnalytics, isSupported }) => {
     isSupported().then((yes) => {
       if (yes) {
-        analytics = getAnalytics(app);
+        const analytics = getAnalytics(app);
         console.log("Firebase Analytics initialized.");
       }
     });
