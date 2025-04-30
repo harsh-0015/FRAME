@@ -2,8 +2,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from '../context/ThemeContext';
-
-
+import { AuthContextProvider } from '../context/authcontext';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,11 +21,13 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
-        <ThemeProvider>
-          {children}
-        </ThemeProvider>
+        <AuthContextProvider>
+          <ThemeProvider>
+            {children}
+          </ThemeProvider>
+        </AuthContextProvider>
       </body>
     </html>
   );
